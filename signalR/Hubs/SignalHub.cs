@@ -45,11 +45,13 @@ namespace signalR.Hubs
         {
             if (tickspeed > 100)
                 tickspeed -= 100;
+            Clients.All.updateTimerOnly(new { tickspeed = tickspeed });
         }
 
         public void SlowDown()
         {
             tickspeed += 100;
+            Clients.All.updateTimerOnly(new { tickspeed = tickspeed });
         }
     }
 }

@@ -33,6 +33,10 @@
                     + '</strong>: ' + data.message + '</li>');
                 $('#tickspeed').html(data.tickspeed);
             };
+            signal.client.updateTimerOnly = function (data) {
+                $('#tickspeed').html(data.tickspeed);
+            }
+
             $.connection.hub.start().done(function () {
                 $('#start').click(function () {
                     signal.server.startTicker();
