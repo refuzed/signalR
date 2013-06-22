@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "Updater";
+}
+
+<h2>Updater</h2>
+
+<div class="container">
+    <ul id="discussion">
+    </ul>
+</div>
+
+@section scripts {
+    <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        $(function () {
+            var signal = $.connection.signalHub;
+            signal.client.addNewMessageToPage = function (data) {
+                $('#discussion').prepend('<li><strong>' + data.name
+                    + '</strong>: ' + data.message + '</li>');
+            };
+            $.connection.hub.start();
+        });
+    </script>
+}
