@@ -8,7 +8,7 @@ namespace signalR.Hubs
 {
     public class SignalHub : Hub
     {
-        private static int tickspeed = 1000;
+        private static int tickspeed;
         private static int counter;
         private static volatile bool ticking;
 
@@ -17,6 +17,7 @@ namespace signalR.Hubs
             if (!ticking)
             {
                 ticking = true;
+                if (tickspeed == 0) tickspeed = 1000;
                 Task.Run(() =>
                 {
                     while (ticking)

@@ -9,7 +9,8 @@
     <input type="button" id="clear" value="clear" />
     <input type="button" id="speedup" value="+" />
     <input type="button" id="slowdown" value="-" />
-    <div id ="tickspeed"></div>
+    <input type="button" id="openme" value="open me in another window"
+    <div id ="tickspeed">1000</div>
     <ul id="data">
     </ul>
 </div>
@@ -53,6 +54,9 @@
                 });
                 $('#slowdown').click(function () {
                     signal.server.slowDown();
+                });
+                $('#openme').click(function () {
+                    window.open('/', '_new', true)
                 });
             });;
         });
