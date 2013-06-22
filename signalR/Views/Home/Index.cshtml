@@ -1,8 +1,6 @@
 ﻿@{
-    ViewBag.Title = "Updater";
+    ViewBag.Title = "signalR Tester";
 }
-
-<h2>Updater</h2>
 
 <div class="container">
     <input type="button" id="start" value="start" /> 
@@ -29,7 +27,7 @@
                 }
                 else { count++; }
 
-                $('#data').prepend('<li class="clone"><strong>' + data.name
+                $('#data').prepend('<li class="clone" style="list-style:none"><strong>' + data.name
                     + '</strong>: ' + data.message + '</li>');
                 $('#tickspeed').html(data.tickspeed);
             };
@@ -49,6 +47,7 @@
                 });
                 $('#clear').click(function () {
                     $('#data').html('');
+                    count = 0;
                 });
                 $('#speedup').click(function () {
                     signal.server.speedUp();
