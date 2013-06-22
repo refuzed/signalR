@@ -10,7 +10,7 @@ namespace signalR.Hubs
     {
         private static int tickspeed;
         private static int counter;
-        private static bool ticking;
+        private static volatile bool ticking;
 
         public void StartTicker()
         {

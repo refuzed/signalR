@@ -20,13 +20,11 @@
     <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
     <script src="~/signalr/hubs"></script>
     <script>
-
         count = 0;
         $(function () {
             var signal = $.connection.signalHub;
             signal.client.addNewMessageToPage = function (data) {
-                
-                if (count > 10) {
+                if (count >= 10) {
                     $('.clone').last().remove();
                 }
                 else { count++; }
