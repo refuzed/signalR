@@ -9,8 +9,8 @@
     <input type="button" id="clear" value="clear" />
     <input type="button" id="speedup" value="+" />
     <input type="button" id="slowdown" value="-" />
-    <input type="button" id="openme" value="open me in another window"
-    <div id ="tickspeed">1000</div>
+    <input type="button" id="openme" value="open me in another window" />
+    <div id ="tickspeed"></div>
     <ul id="data">
     </ul>
 </div>
@@ -32,7 +32,7 @@
                     + '</strong>: ' + data.message + '</li>');
             };
             signal.client.updateTimerOnly = function (data) {
-                $('#tickspeed').html(data.tickspeed);
+                $('#tickspeed').text(data.tickspeed);
             }
 
             $.connection.hub.start().done(function () {
@@ -56,7 +56,7 @@
                     signal.server.slowDown();
                 });
                 $('#openme').click(function () {
-                    window.open('/', '_new', true)
+                    window.open('/', '_new', false)
                 });
             });;
         });
