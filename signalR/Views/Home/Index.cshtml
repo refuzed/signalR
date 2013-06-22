@@ -56,7 +56,7 @@
                     signal.server.slowDown();
                 });
                 $('#openme').click(function () {
-                    window.open('/', '_new', false)
+                    window.open('@Request.Url.AbsoluteUri', '_new', false)
                 });
             });;
         });

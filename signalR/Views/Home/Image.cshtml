@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Image";
+}
+
+<h2>Image</h2>
+
+<input type="button" id="openme" value="open me in another window" />
+
+<div id="wrapper" style="border: 2px solid black; width: 500px; height: 400px">
+    <div id="draggable" style="border: 2px solid black; width: 50px; height: 50px">
+      <p>Drag me</p>
+    </div>
+</div>
+
+
+@section scripts {
+
+    <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        count = 0;
+        $(function () {
+            var image = $.connection.imageHub;
+            image.client.updateXY = function (data) {
+                $('#draggable').css({ 'left' : data.x, 'top' : data.y });
+            };
+
+            $.connection.hub.start().done(function () {
+                $(function () {
+                    $("#draggable").draggable({
+                        containment: "#wrapper",
+                        drag: function () {
+                            image.server.sendClick($(this).css('left'), $(this).css('top'));
+                        }
+                    });
+                    $('#openme').click(function () {
+                        window.open('@Request.Url.AbsoluteUri', '_new', false)
+                    });
+                });
+            });;
+        });
+
+
+    </script>
+}

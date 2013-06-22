@@ -20,7 +20,8 @@
                     </section>
                     <nav>
                         <ul id="menu">
-@*                            <li>@Html.ActionLink("Home", "Index", "Home")</li>*@
+                            <li>@Html.ActionLink("Timer", "Index", "Home")</li>
+                            <li>@Html.ActionLink("Image", "Image", "Home")</li>
                         </ul>
                     </nav>
                 </div>
@@ -40,6 +41,8 @@
         </footer>
 
         @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+
         @RenderSection("scripts", required: false)
     </body>
 </html>

@@ -14,5 +14,10 @@ namespace signalR.Controllers
         {
             return View();
         }
+
+        public ActionResult Image()
+        {
+            return View();
+        }
     }
 }
