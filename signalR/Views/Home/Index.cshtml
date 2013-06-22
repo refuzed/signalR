@@ -5,6 +5,7 @@
 <h2>Updater</h2>
 
 <div class="container">
+    <input type="button" id="start" value="start" /> <input type="button" id="stop" value="stop" />
     <ul id="discussion">
     </ul>
 </div>
@@ -19,7 +20,14 @@
                 $('#discussion').prepend('<li><strong>' + data.name
                     + '</strong>: ' + data.message + '</li>');
             };
-            $.connection.hub.start();
+            $.connection.hub.start().done(function () {
+                $('#start').click(function () {
+                    signal.server.startTicker();
+                });
+                $('#stop').click(function () {
+                    signal.server.stopTicker();
+                });
+            });;
         });
     </script>
 }
