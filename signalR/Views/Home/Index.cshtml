@@ -5,8 +5,14 @@
 <h2>Updater</h2>
 
 <div class="container">
-    <input type="button" id="start" value="start" /> <input type="button" id="stop" value="stop" />
-    <ul id="discussion">
+    <input type="button" id="start" value="start" /> 
+    <input type="button" id="stop" value="stop" />
+    <input type="button" id="reset" value="reset" />
+    <input type="button" id="clear" value="clear" />
+    <input type="button" id="speedup" value="+" />
+    <input type="button" id="slowdown" value="-" />
+    <div id ="tickspeed"></div>
+    <ul id="data">
     </ul>
 </div>
 
@@ -14,11 +20,20 @@
     <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
     <script src="~/signalr/hubs"></script>
     <script>
+
+        count = 0;
         $(function () {
             var signal = $.connection.signalHub;
             signal.client.addNewMessageToPage = function (data) {
-                $('#discussion').prepend('<li><strong>' + data.name
+                
+                if (count > 10) {
+                    $('.clone').last().remove();
+                }
+                else { count++; }
+
+                $('#data').prepend('<li class="clone"><strong>' + data.name
                     + '</strong>: ' + data.message + '</li>');
+                $('#tickspeed').html(data.tickspeed);
             };
             $.connection.hub.start().done(function () {
                 $('#start').click(function () {
@@ -26,6 +41,18 @@
                 });
                 $('#stop').click(function () {
                     signal.server.stopTicker();
+                });
+                $('#reset').click(function () {
+                    signal.server.resetTicker();
+                });
+                $('#clear').click(function () {
+                    $('#data').html('');
+                });
+                $('#speedup').click(function () {
+                    signal.server.speedUp();
+                });
+                $('#slowdown').click(function () {
+                    signal.server.slowDown();
                 });
             });;
         });
