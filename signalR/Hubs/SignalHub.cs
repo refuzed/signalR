@@ -8,14 +8,12 @@ namespace signalR.Hubs
 {
     public class SignalHub : Hub
     {
-        private static int tickspeed;
+        private static int tickspeed = 1000;
         private static int counter;
         private static volatile bool ticking;
 
         public void StartTicker()
         {
-            if (tickspeed == 0) tickspeed = 1000;
-
             if (!ticking)
             {
                 ticking = true;
@@ -24,7 +22,7 @@ namespace signalR.Hubs
                     while (ticking)
                     {
                         counter++; 
-                        Clients.All.addNewMessageToPage(new { name = "Tick", message = counter, tickspeed = tickspeed }); 
+                        Clients.All.addNewMessageToPage(new { name = "Tick", message = counter }); 
                         Thread.Sleep(tickspeed);
                     }
                 });
@@ -43,14 +41,16 @@ namespace signalR.Hubs
 
         public void SpeedUp()
         {
-            if (tickspeed > 100)
-                tickspeed -= 100;
-            Clients.All.updateTimerOnly(new { tickspeed = tickspeed });
+            if (tickspeed > 50)
+            {
+                tickspeed -= 50;
+                Clients.All.updateTimerOnly(new { tickspeed = tickspeed });
+            }
         }
 
         public void SlowDown()
         {
-            tickspeed += 100;
+            tickspeed += 50;
             Clients.All.updateTimerOnly(new { tickspeed = tickspeed });
         }
     }

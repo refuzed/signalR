@@ -29,7 +29,6 @@
 
                 $('#data').prepend('<li class="clone" style="list-style:none"><strong>' + data.name
                     + '</strong>: ' + data.message + '</li>');
-                $('#tickspeed').html(data.tickspeed);
             };
             signal.client.updateTimerOnly = function (data) {
                 $('#tickspeed').html(data.tickspeed);
