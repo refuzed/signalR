@@ -17,7 +17,7 @@ namespace signalR.Hubs
 
         public void SendPaint(string x, string y)
         {
-            Clients.All.paintXY(new { x = x, y = y, fill = GetRandomColorRGB() });
+            Clients.All.paintXY(new { x = x, y = y, fill = GetRandomColorRGB(), radius = rand.Next(5, 25) });
         }
         
         private object GetRandomColorRGB()
