@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Image3";
+}
+
+<h2>Image3</h2>
+
+<input type="button" id="openme" value="open me in another window" />
+
+<div  width="700" height="400">
+    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"> </canvas>
+</div>
+
+@section scripts {
+
+    <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
+    <script src="~/Scripts/jcanvas.min.js"></script>
+    <script src="~/signalr/hubs"></script>
+    <script>
+        count = 0;
+        drawlist = [];
+        lastclick = {};
+
+        $(function () {
+            var image = $.connection.imageHub;
+
+            image.client.paintXY = function (data) {
+                //alert(data.x + ", " + data.y + " r:" + data.r + " g:" + data.g + " b:" + data.b);
+
+                //if (drawlist.length >= 50)
+                //{ drawlist.shift(); }
+
+                //var r = Math.floor((Math.random() * 360) + 1);
+
+                //drawlist.push({ data: data, shift: { start: r, end: r + 40 } });
+                lastclick = { x: data.x, y: data.y };
+            };
+
+            $.connection.hub.start().done(function () {
+                $(function () {
+                    $('body').addClass("nohighlight");
+
+
+                    $('#canvas').click(function (e) {
+                        position = getPosition(event);
+                        image.server.sendPaint(Math.floor(position.x), Math.floor(position.y)); // TODO: RGB
+                    });
+
+                    $('#openme').click(function () {
+                        window.open('@Request.Url.AbsoluteUri', '_new', false)
+                    });
+                });
+            });;
+        });
+
+        function update() {
+            $('#canvas').drawRect({
+                fillStyle: "#ddd",
+                x: 0, y: 0,
+                width: $('#canvas').width(),
+                height: $('#canvas').height(),
+                fromCenter: false
+            });
+
+            drawlist.forEach(function (element, index, array) {
+                if (element.shift.start < 360)
+                    element.shift.start++
+                else
+                    element.shift.start = 0;
+
+                if (element.shift.end < 360)
+                    element.shift.end++
+                else
+                    element.shift.end = 0;
+
+                element.data.x = element.data.x + (lastclick.x - element.data.x) / 100;
+                element.data.y = element.data.y + (lastclick.y - element.data.y) / 100;
+
+                $('#canvas').drawArc({
+                    fillStyle: "rgba(" + element.data.fill.r + ", " + element.data.fill.g + ", " + element.data.fill.b + ", 0.5)",
+                    strokeWidth: 15,
+                    x: element.data.x, y: element.data.y,
+                    start: element.shift.start, end: element.shift.end,
+                    radius: element.data.radius
+                });
+            });
+
+            setInterval(update, 400);
+        };
+
+        function init()
+        {
+            for(var i = 0; i < 50; i++)
+            {
+                var s = Math.floor((Math.random() * 360) + 1);
+                var r = Math.floor((Math.random() * 75) + 5);
+                lastclick = { x: 0, y: 0 };
+                drawlist.push({ data: { x: 0, y: 0, radius: r, fill: { r: 50, g: 50, b: 50}} , shift: { start: s, end: s + 40 } });
+            }
+        }
+
+        init();
+        update();
+
+        function getPosition(e) {
+            var targ;
+            if (!e)
+                e = window.event;
+            if (e.target)
+                targ = e.target;
+            else if (e.srcElement)
+                targ = e.srcElement;
+            if (targ.nodeType == 3)
+                targ = targ.parentNode;
+
+            var x = e.pageX - $(targ).offset().left;
+            var y = e.pageY - $(targ).offset().top;
+
+            return { "x": x, "y": y };
+        };
+
+    </script>
+}

@@ -291,6 +291,7 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\Image1.cshtml" />
     <Content Include="Views\Home\Image2.cshtml" />
+    <Content Include="Views\Home\Image3.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
