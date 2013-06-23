@@ -15,7 +15,12 @@ namespace signalR.Controllers
             return View();
         }
 
-        public ActionResult Image()
+        public ActionResult Image1()
+        {
+            return View();
+        }
+
+        public ActionResult Image2()
         {
             return View();
         }
