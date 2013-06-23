@@ -3,6 +3,7 @@ using System.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
+using TaskEx = System.Threading.Tasks.Task;
 
 namespace signalR.Hubs
 {
@@ -18,13 +19,13 @@ namespace signalR.Hubs
             {
                 ticking = true;
                 if (tickspeed == 0) tickspeed = 1000;
-                Task.Run(() =>
+                Task.Run(async () =>
                 {
                     while (ticking)
                     {
                         counter++; 
-                        Clients.All.addNewMessageToPage(new { name = "Tick", message = counter }); 
-                        Thread.Sleep(tickspeed);
+                        Clients.All.addNewMessageToPage(new { name = "Tick", message = counter });
+                        await TaskEx.Delay(tickspeed);
                     }
                 });
             }
