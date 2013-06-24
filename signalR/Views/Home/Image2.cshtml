@@ -1,13 +1,13 @@
 ﻿@{
-    ViewBag.Title = "Image2";
+    ViewBag.Title = "Shared Canvas";
 }
 
-<h2>Image2</h2>
+<h2>Shared Canvas</h2>
 
 <input type="button" id="openme" value="open me in another window" />
-
-<div  width="700" height="400">
-    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"> </canvas>
+<input type="button" id="clear" value="clear canvas" />
+<div width="700" height="400">
+    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"></canvas>
 </div>
 
 @section scripts {
@@ -20,16 +20,24 @@
         $('body').addClass("nohighlight");
 
         $('#openme').click(function () {
-            window.open('@Request.Url.AbsoluteUri', '_blank', false)
+            window.open('@Request.Url.AbsoluteUri', '_blank', "location=1,status=1,scrollbars=1");
         });
 
-        $('#canvas').drawRect({
-            fillStyle: "#ddd",
-            x: 0, y: 0,
-            width: $('#canvas').width(),
-            height: $('#canvas').height(),
-            fromCenter: false
+        $('#clear').click(function () {
+            clearCanvas();
         });
+
+        function clearCanvas() {
+            $('#canvas').drawRect({
+                fillStyle: "#ddd",
+                x: 0, y: 0,
+                width: $('#canvas').width(),
+                height: $('#canvas').height(),
+                fromCenter: false
+            });
+        }
+
+        clearCanvas();
 
         var image = $.connection.imageHub;
 

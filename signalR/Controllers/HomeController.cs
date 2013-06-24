@@ -12,7 +12,7 @@ namespace signalR.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Image2");
         }
 
         public ActionResult Image1()
