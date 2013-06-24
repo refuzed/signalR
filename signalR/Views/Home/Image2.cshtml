@@ -18,6 +18,7 @@
     <script src="~/signalr/hubs"></script>
     <script>
         count = 0;
+        sending = false;
         $('body').addClass("nohighlight");
 
         $('#canvas').drawRect({
@@ -41,34 +42,39 @@
 
             $.connection.hub.start().done(function () {
                 $(function () {
-                    $('#canvas').click(function (e) {
-                        position = getPosition(e);
-                        image.server.sendPaint(Math.floor(position.x), Math.floor(position.y)); // TODO: RGB
+                    $('#canvas').mousedown(function (e) {
+                        sending = true;
+                    });
+
+                    $('#canvas').mouseup(function (e) {
+                        sending = false;
                     });
 
                     $('#openme').click(function () {
                         window.open('@Request.Url.AbsoluteUri', '_new', false)
                     });
+
+                    function getMousePos(canvas, evt) {
+                        var rect = canvas.getBoundingClientRect();
+                        return {
+                            x: evt.clientX - rect.left,
+                            y: evt.clientY - rect.top
+                        };
+                    }
+                    var canvas = document.getElementById('canvas');
+                    var context = canvas.getContext('2d');
+
+                    canvas.addEventListener('mousemove', function (evt) {
+                        var mousePos = getMousePos(canvas, evt);
+                        if (sending) {
+                            image.server.sendPaint(Math.floor(mousePos.x), Math.floor(mousePos.y)); // TODO: RGB
+                        }
+                    }, false);
+
                 });
             });
         });
 
-        function getPosition(e) {
-            var targ;
-            if (!e)
-                e = window.event;
-            if (e.target)
-                targ = e.target;
-            else if (e.srcElement)
-                targ = e.srcElement;
-            if (targ.nodeType == 3)
-                targ = targ.parentNode;
-
-            var x = e.pageX - $(targ).offset().left;
-            var y = e.pageY - $(targ).offset().top;
-
-            return { "x": x, "y": y };
-        };
 
     </script>
 }
