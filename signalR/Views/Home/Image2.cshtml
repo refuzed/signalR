@@ -17,8 +17,11 @@
     <script src="~/signalr/hubs"></script>
     <script>
         count = 0;
-        sending = false;
         $('body').addClass("nohighlight");
+
+        $('#openme').click(function () {
+            window.open('@Request.Url.AbsoluteUri', '_new', false)
+        });
 
         $('#canvas').drawRect({
             fillStyle: "#ddd",
@@ -28,62 +31,56 @@
             fromCenter: false
         });
 
-        $(function () {
-            var image = $.connection.imageHub;
+        var image = $.connection.imageHub;
 
-            image.client.paintXY = function (data) {
-                $('#canvas').drawArc({
-                    fillStyle: "rgba(" + data.fill.r + ", " + data.fill.g + ", " + data.fill.b + ", 0.5)",
-                    x: data.x, y: data.y,
-                    radius: data.radius
+        image.client.paintXY = function (data) {
+            $('#canvas').drawArc({
+                fillStyle: "rgba(" + data.fill.r + ", " + data.fill.g + ", " + data.fill.b + ", 0.5)",
+                x: data.x, y: data.y,
+                radius: data.radius
+            });
+        };
+
+        $.connection.hub.start().done(function () {
+            $(function () {
+                var sending = false;
+
+                document.addEventListener('mousedown', function (evt) {
+                    sending = true;
+                    sendLoop();
                 });
-            };
 
-            $.connection.hub.start().done(function () {
-                $(function () {
-                    $('#openme').click(function () {
-                        window.open('@Request.Url.AbsoluteUri', '_new', false)
-                    });
+                document.addEventListener('mouseup', function (evt) {
+                    sending = false;
+                });
 
-                    var mouseX = 0;
-                    var mouseY = 0;
-                    var sending = false;
-
-                    document.addEventListener('mousemove', onMouseMove, false)
-
-                    function onMouseMove(e) {
-                        mouseX = e.clientX;
-                        mouseY = e.clientY;
+                function sendLoop() {
+                    if (sending) {
+                        var mousePos = getMousePosOnTarget(canvas);
+                        image.server.sendPaint(Math.floor(mousePos.x), Math.floor(mousePos.y)); // TODO: RGB
+                        setTimeout(sendLoop, 50);
                     }
-
-                    function getMousePosOnTarget(canvasTarget) {
-                        var rect = canvasTarget.getBoundingClientRect();
-                        return {
-                            x: mouseX - rect.left,
-                            y: mouseY - rect.top
-                        };
-                    };
-
-                    var canvas = document.getElementById('canvas');
-
-                    function sendLoop() {
-                        if (sending) {
-                            var mousePos = getMousePosOnTarget(canvas);
-                            image.server.sendPaint(Math.floor(mousePos.x), Math.floor(mousePos.y)); // TODO: RGB
-                            setTimeout(sendLoop, 50);
-                        }
-                    };
-
-                    document.addEventListener('mousedown', function (evt) {
-                        sending = true;
-                        sendLoop();
-                    });
-
-                    document.addEventListener('mouseup', function (evt) {
-                        sending = false;
-                    });
-                });
+                };
             });
         });
+
+        var mouseX = 0;
+        var mouseY = 0;
+        document.addEventListener('mousemove', onMouseMove, false)
+
+        function onMouseMove(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        var canvas = document.getElementById('canvas');
+
+        function getMousePosOnTarget(canvasTarget) {
+            var rect = canvasTarget.getBoundingClientRect();
+            return {
+                x: mouseX - rect.left,
+                y: mouseY - rect.top
+            };
+        };
     </script>
 }
