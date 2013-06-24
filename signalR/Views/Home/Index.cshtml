@@ -1,64 +1,94 @@
 ﻿@{
-    ViewBag.Title = "signalR Tester";
+    ViewBag.Title = "Shared Canvas";
 }
 
-<div class="container">
-    <input type="button" id="start" value="start" /> 
-    <input type="button" id="stop" value="stop" />
-    <input type="button" id="reset" value="reset" />
-    <input type="button" id="clear" value="clear" />
-    <input type="button" id="speedup" value="+" />
-    <input type="button" id="slowdown" value="-" />
-    <input type="button" id="openme" value="open me in another window" />
-    <div id ="tickspeed"></div>
-    <ul id="data">
-    </ul>
+<h2>Shared Canvas</h2>
+
+<input type="button" id="openme" value="open me in another window" />
+<input type="button" id="clear" value="clear canvas" />
+<div width="700" height="400">
+    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"></canvas>
 </div>
 
 @section scripts {
+
     <script src="~/Scripts/jquery.signalR-1.1.2.js"></script>
+    <script src="~/Scripts/jcanvas.min.js"></script>
     <script src="~/signalr/hubs"></script>
     <script>
         count = 0;
-        $(function () {
-            var signal = $.connection.signalHub;
-            signal.client.addNewMessageToPage = function (data) {
-                if (count >= 10) {
-                    $('.clone').last().remove();
-                }
-                else { count++; }
+        $('body').addClass("nohighlight");
 
-                $('#data').prepend('<li class="clone" style="list-style:none"><strong>' + data.name
-                    + '</strong>: ' + data.message + '</li>');
-            };
-            signal.client.updateTimerOnly = function (data) {
-                $('#tickspeed').text(data.tickspeed);
-            }
-
-            $.connection.hub.start().done(function () {
-                $('#start').click(function () {
-                    signal.server.startTicker();
-                });
-                $('#stop').click(function () {
-                    signal.server.stopTicker();
-                });
-                $('#reset').click(function () {
-                    signal.server.resetTicker();
-                });
-                $('#clear').click(function () {
-                    $('#data').html('');
-                    count = 0;
-                });
-                $('#speedup').click(function () {
-                    signal.server.speedUp();
-                });
-                $('#slowdown').click(function () {
-                    signal.server.slowDown();
-                });
-                $('#openme').click(function () {
-                    window.open('@Request.Url.AbsoluteUri', '_blank', false)
-                });
-            });;
+        $('#openme').click(function () {
+            window.open('@Request.Url.AbsoluteUri', '_blank', "location=1,status=1,scrollbars=1");
         });
+
+        $('#clear').click(function () {
+            clearCanvas();
+        });
+
+        function clearCanvas() {
+            $('#canvas').drawRect({
+                fillStyle: "#ddd",
+                x: 0, y: 0,
+                width: $('#canvas').width(),
+                height: $('#canvas').height(),
+                fromCenter: false
+            });
+        }
+
+        clearCanvas();
+
+        var image = $.connection.imageHub;
+
+        image.client.paintXY = function (data) {
+            $('#canvas').drawArc({
+                fillStyle: "rgba(" + data.fill.r + ", " + data.fill.g + ", " + data.fill.b + ", 0.5)",
+                x: data.x, y: data.y,
+                radius: data.radius
+            });
+        };
+
+        $.connection.hub.start().done(function () {
+            $(function () {
+                var sending = false;
+
+                document.addEventListener('mousedown', function (evt) {
+                    sending = true;
+                    sendLoop();
+                });
+
+                document.addEventListener('mouseup', function (evt) {
+                    sending = false;
+                });
+
+                function sendLoop() {
+                    if (sending) {
+                        var mousePos = getMousePosOnTarget(canvas);
+                        image.server.sendPaint(Math.floor(mousePos.x), Math.floor(mousePos.y)); // TODO: RGB
+                        setTimeout(sendLoop, 50);
+                    }
+                };
+            });
+        });
+
+        var mouseX = 0;
+        var mouseY = 0;
+        document.addEventListener('mousemove', onMouseMove, false)
+
+        function onMouseMove(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        }
+
+        var canvas = document.getElementById('canvas');
+
+        function getMousePosOnTarget(canvasTarget) {
+            var rect = canvasTarget.getBoundingClientRect();
+            return {
+                x: mouseX - rect.left,
+                y: mouseY - rect.top
+            };
+        };
     </script>
 }
