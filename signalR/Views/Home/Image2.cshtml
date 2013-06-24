@@ -18,34 +18,31 @@
     <script src="~/signalr/hubs"></script>
     <script>
         count = 0;
+        $('body').addClass("nohighlight");
+
+        $('#canvas').drawRect({
+            fillStyle: "#ddd",
+            x: 0, y: 0,
+            width: $('#canvas').width(),
+            height: $('#canvas').height(),
+            fromCenter: false
+        });
 
         $(function () {
             var image = $.connection.imageHub;
 
             image.client.paintXY = function (data) {
-                //alert(data.x + ", " + data.y + " r:" + data.r + " g:" + data.g + " b:" + data.b);
-
                 $('#canvas').drawArc({
                     fillStyle: "rgba(" + data.fill.r + ", " + data.fill.g + ", " + data.fill.b + ", 0.5)",
                     x: data.x, y: data.y,
                     radius: data.radius
                 });
-                    
             };
 
             $.connection.hub.start().done(function () {
                 $(function () {
-                    $('body').addClass("nohighlight");
-                    $('#canvas').drawRect({
-                        fillStyle: "#ddd",
-                        x: 0, y: 0,
-                        width: $('#canvas').width(),
-                        height: $('#canvas').height(),
-                        fromCenter: false
-                    });
-
                     $('#canvas').click(function (e) {
-                        position = getPosition(event);
+                        position = getPosition(e);
                         image.server.sendPaint(Math.floor(position.x), Math.floor(position.y)); // TODO: RGB
                     });
 
@@ -53,7 +50,7 @@
                         window.open('@Request.Url.AbsoluteUri', '_new', false)
                     });
                 });
-            });;
+            });
         });
 
         function getPosition(e) {

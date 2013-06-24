@@ -6,8 +6,8 @@
 
 <input type="button" id="openme" value="open me in another window" />
 
-<div  width="700" height="400">
-    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"> </canvas>
+<div width="700" height="400">
+    <canvas id="canvas" width="700" height="400" style="border: 2px solid black"></canvas>
 </div>
 
 @section scripts {
@@ -19,37 +19,27 @@
         count = 0;
         drawlist = [];
         lastclick = {};
+        $('body').addClass("nohighlight");
+
+        $('#openme').click(function () {
+            window.open('@Request.Url.AbsoluteUri', '_new', false)
+        });
 
         $(function () {
             var image = $.connection.imageHub;
 
             image.client.paintXY = function (data) {
-                //alert(data.x + ", " + data.y + " r:" + data.r + " g:" + data.g + " b:" + data.b);
-
-                //if (drawlist.length >= 50)
-                //{ drawlist.shift(); }
-
-                //var r = Math.floor((Math.random() * 360) + 1);
-
-                //drawlist.push({ data: data, shift: { start: r, end: r + 40 } });
                 lastclick = { x: data.x, y: data.y };
             };
 
             $.connection.hub.start().done(function () {
                 $(function () {
-                    $('body').addClass("nohighlight");
-
-
                     $('#canvas').click(function (e) {
-                        position = getPosition(event);
+                        position = getPosition(e);
                         image.server.sendPaint(Math.floor(position.x), Math.floor(position.y)); // TODO: RGB
                     });
-
-                    $('#openme').click(function () {
-                        window.open('@Request.Url.AbsoluteUri', '_new', false)
-                    });
                 });
-            });;
+            });
         });
 
         function update() {
@@ -87,14 +77,12 @@
             setInterval(update, 400);
         };
 
-        function init()
-        {
-            for(var i = 0; i < 50; i++)
-            {
+        function init() {
+            for (var i = 0; i < 50; i++) {
                 var s = Math.floor((Math.random() * 360) + 1);
                 var r = Math.floor((Math.random() * 75) + 5);
                 lastclick = { x: 0, y: 0 };
-                drawlist.push({ data: { x: 0, y: 0, radius: r, fill: { r: 50, g: 50, b: 50}} , shift: { start: s, end: s + 40 } });
+                drawlist.push({ data: { x: 0, y: 0, radius: r, fill: { r: 50, g: 50, b: 50 } }, shift: { start: s, end: s + 40 } });
             }
         }
 
